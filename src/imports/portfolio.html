@@ -1,0 +1,1830 @@
+<!DOCTYPE html><html lang="en" data-theme="dark"><head>
+
+
+<meta charset="utf-8">
+<title>Anna Demeshko — Portfolio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --serif: 'Instrument Serif', 'Times New Roman', serif;
+    --sans: 'Geist', -apple-system, system-ui, sans-serif;
+
+    --bg: #151517;
+    --panel: #1c1c20;
+    --panel2: #232328;
+    --ink: #e8e8ea;
+    --muted: #7a7a82;
+    --dim: #3a3a42;
+    --line: rgba(255,255,255,0.07);
+    --accent: #4b3bff;
+    --accent2: #d4fb3c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: var(--mono);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 12px;
+    overflow: hidden; /* internal scroll only */
+  }
+  ::selection { background: var(--accent); color: #fff; }
+
+  /* Lang switcher — top-right */
+  .lang {
+    position: fixed;
+    top: 14px;
+    right: 16px;
+    z-index: 100;
+    display: flex;
+    background: rgba(28,28,32,0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .lang button {
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    padding: 5px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    transition: all 0.15s ease;
+    text-transform: uppercase;
+  }
+  .lang button:hover { color: var(--ink); }
+  .lang button.active { background: var(--accent); color: #fff; }
+
+  /* Main grid: topbar / side+main / status */
+  .wrap {
+    display: grid;
+    grid-template-rows: 36px 1fr 22px;
+    grid-template-columns: 260px 1fr;
+    grid-template-areas:
+      "top top"
+      "side main"
+      "status status";
+    height: 100vh;
+  }
+
+  /* Top chrome */
+  .top {
+    grid-area: top;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 14px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .top .dots { display:flex; gap:6px; margin-right: 6px; }
+  .top .dots i {
+    width:10px; height:10px; border-radius: 50%; background: var(--dim);
+  }
+  .top .dots i:nth-child(1) { background: #ff5f57; }
+  .top .dots i:nth-child(2) { background: #febc2e; }
+  .top .dots i:nth-child(3) { background: #28c840; }
+  .top .crumb { color: var(--ink); }
+  .top .crumb b { color: var(--accent2); font-weight: 500; }
+  .top-right { margin-left: auto; display: flex; gap: 14px; align-items: center; margin-right: 110px; }
+  .top-right span { opacity: 0.7; }
+
+  /* Sidebar — fixed */
+  .side {
+    grid-area: side;
+    background: var(--panel);
+    border-right: 1px solid var(--line);
+    overflow-y: auto;
+    padding: 8px 0 20px;
+  }
+  .side::-webkit-scrollbar { width: 6px; }
+  .side::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 3px; }
+
+  .tree-section { padding: 10px 10px 4px; }
+  .folder {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px 5px 4px;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: default;
+    user-select: none;
+  }
+  .folder::before { content: '▾'; font-size: 8px; color: var(--dim); }
+
+  .tree-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px 5px 18px;
+    font-size: 12px;
+    color: var(--ink);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    text-decoration: none;
+    transition: background 0.1s ease;
+    font-family: var(--mono);
+  }
+  .tree-item:hover { background: var(--panel2); }
+  .tree-item.active {
+    background: var(--panel2);
+    border-left-color: var(--accent2);
+  }
+  .tree-item.active .tname { color: var(--accent2); }
+  .tree-item .tico {
+    width: 12px;
+    display: inline-block;
+    flex-shrink: 0;
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 10px;
+    text-align: center;
+  }
+  .tree-item.active .tico { color: var(--accent2); }
+  .tree-item .tname { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tree-item .text-ext { color: var(--muted); opacity: 0.7; }
+  .tree-item .idx { color: var(--muted); font-size: 10px; opacity: 0.6; margin-right: 4px; }
+
+  /* Main scrollable area */
+  .main {
+    grid-area: main;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    background: var(--bg);
+    min-width: 0;
+  }
+  .main::-webkit-scrollbar { width: 8px; }
+  .main::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 4px; }
+  .main::-webkit-scrollbar-track { background: var(--panel); }
+
+  .tabs {
+    position: sticky;
+    top: 0;
+    display: flex;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+    overflow-x: auto;
+    scrollbar-width: none;
+    z-index: 5;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-right: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    border-top: 2px solid transparent;
+    text-decoration: none;
+    font-family: var(--mono);
+  }
+  .tab.active {
+    color: var(--ink);
+    background: var(--bg);
+    border-top-color: var(--accent);
+  }
+  .tab .x { color: var(--dim); font-size: 10px; }
+  .tab:hover { color: var(--ink); }
+
+  .editor {
+    padding: 28px 40px 120px;
+    max-width: 980px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 44px;
+  }
+
+  section {
+    scroll-margin-top: 60px;
+  }
+
+  .sec-marker {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 14px;
+    font-family: var(--mono);
+  }
+  .sec-marker b { color: var(--ink); font-weight: 500; }
+
+  /* README hero */
+  .readme-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 30px;
+    align-items: start;
+  }
+  @media (max-width: 820px) { .readme-head { grid-template-columns: 1fr; } }
+  .h1 {
+    font-family: var(--sans);
+    font-size: clamp(38px, 6vw, 56px);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0 0 14px;
+  }
+  .h1 span { color: var(--accent2); }
+  .lede {
+    font-family: var(--sans);
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--ink);
+    max-width: 620px;
+    margin: 0;
+  }
+  .lede .hi { color: var(--muted); }
+
+  .meta-block {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    padding: 14px 16px;
+    border-radius: 4px;
+    min-width: 240px;
+  }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 11px;
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .meta-row:last-child { border-bottom: 0; }
+  .meta-row .k { color: var(--muted); }
+  .meta-row .v { color: var(--ink); text-align: right; }
+
+  /* Code block */
+  .code {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 18px 22px;
+    font-size: 12.5px;
+    line-height: 1.75;
+    color: var(--ink);
+    overflow-x: auto;
+  }
+  .code .ln { color: var(--dim); user-select: none; display: inline-block; width: 22px; text-align: right; margin-right: 14px; }
+  .code .com { color: var(--muted); }
+  .code .kw { color: #c77dff; }
+  .code .str { color: var(--accent2); }
+  .code .fn { color: #ff8a4c; }
+  .code .sym { color: var(--accent); }
+
+  /* Section head */
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 16px;
+  }
+  .sec-title {
+    font-family: var(--sans);
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .sec-title .slash { color: var(--muted); font-weight: 400; }
+  .sec-meta { font-size: 11px; color: var(--muted); }
+
+  /* Projects list */
+  .projects { display: flex; flex-direction: column; }
+  .proj {
+    display: grid;
+    grid-template-columns: 46px 1fr 150px 110px 74px;
+    gap: 18px;
+    align-items: center;
+    padding: 16px 12px;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    transition: background 0.12s ease, padding 0.15s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+  .proj:hover { background: var(--panel); padding-left: 18px; }
+  .proj:hover .proj-name { color: var(--accent2); }
+  .proj:hover .proj-preview { transform: scale(1.05); border-color: var(--accent2); }
+  .proj .proj-tag { transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease; }
+  .proj:hover .proj-tag {
+    color: var(--accent2);
+    border-color: var(--accent2);
+    background: rgba(212,251,60,0.08);
+  }
+
+  .proj-idx {
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    font-family: var(--mono);
+  }
+  .proj-main { min-width: 0; }
+  .proj-name {
+    font-family: var(--sans);
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: 3px;
+    transition: color 0.15s ease;
+    line-height: 1.2;
+  }
+  .proj-name .ext { color: var(--muted); font-weight: 400; font-family: var(--mono); font-size: 14px; }
+  .proj-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .proj-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+  .proj-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--muted);
+    text-transform: lowercase;
+    font-family: var(--mono);
+  }
+  .proj-metric {
+    font-family: var(--sans);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .proj-metric .val { color: var(--accent2); }
+  .proj-metric .lbl { display: block; font-family: var(--mono); font-size: 10px; color: var(--muted); font-weight: 400; margin-top: 4px; }
+
+  .proj-preview {
+    width: 74px; height: 46px;
+    border-radius: 3px;
+    background: var(--panel2);
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    flex-shrink: 0;
+  }
+  .pv-table    { background:
+      linear-gradient(180deg, var(--panel2) 0, var(--panel2) 10px, var(--line) 10px, var(--line) 11px, var(--panel2) 11px, var(--panel2) 20px, var(--line) 20px, var(--line) 21px, var(--panel2) 21px, var(--panel2) 30px, var(--line) 30px, var(--line) 31px, var(--panel2) 31px);
+  }
+  .pv-diff     { background: linear-gradient(90deg, var(--panel2) 50%, rgba(212,251,60,0.18) 50%); }
+  .pv-kanban   { background:
+      linear-gradient(90deg, transparent 21%, var(--line) 21%, var(--line) 23%, transparent 23%, transparent 48%, var(--line) 48%, var(--line) 50%, transparent 50%, transparent 75%, var(--line) 75%, var(--line) 77%, transparent 77%),
+      var(--panel2);
+  }
+  .pv-steps    {
+    background:
+      radial-gradient(circle at 20% 50%, var(--accent2) 3px, transparent 4px),
+      radial-gradient(circle at 50% 50%, var(--accent) 3px, transparent 4px),
+      radial-gradient(circle at 80% 50%, var(--dim) 3px, transparent 4px),
+      linear-gradient(90deg, transparent 20%, var(--line) 20%, var(--line) 80%, transparent 80%) center/100% 1px no-repeat,
+      var(--panel2);
+  }
+  .pv-chat     { background:
+      radial-gradient(circle at 20% 30%, var(--line) 10px, transparent 11px),
+      radial-gradient(circle at 80% 70%, var(--accent2) 8px, transparent 9px),
+      var(--panel2);
+  }
+  .pv-tokens   { background: conic-gradient(from 45deg, var(--accent), var(--accent2), var(--muted), var(--accent)); opacity: 0.75; }
+
+  /* Stack section */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 700px) { .stack-grid { grid-template-columns: repeat(3, 1fr); } }
+  .stack-cell {
+    aspect-ratio: 1;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    transition: all 0.15s ease;
+    cursor: default;
+  }
+  .stack-cell:hover { border-color: var(--accent2); color: var(--accent2); }
+  .stack-cell b {
+    font-family: var(--sans);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .stack-cell:hover b { color: var(--accent2); }
+
+  /* Contacts */
+  .contacts { display: flex; flex-direction: column; }
+  .contact {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink);
+    text-decoration: none;
+    transition: background 0.12s ease, padding 0.15s ease;
+  }
+  .contact:hover { background: var(--panel); padding-left: 18px; color: var(--accent2); }
+  .contact .k { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .contact .arrow { color: var(--muted); }
+  .contact:hover .arrow { color: var(--accent2); }
+
+  /* Vibes easter egg */
+  .vibes {
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 6px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  .vibes:hover { border-color: var(--accent2); }
+  .vibes .eq {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 18px;
+  }
+  .vibes .eq i {
+    display: block;
+    width: 3px;
+    background: var(--accent2);
+    animation: eq 1s ease-in-out infinite;
+  }
+  .vibes .eq i:nth-child(1) { height: 40%; animation-delay: 0s; }
+  .vibes .eq i:nth-child(2) { height: 90%; animation-delay: 0.2s; }
+  .vibes .eq i:nth-child(3) { height: 60%; animation-delay: 0.4s; }
+  .vibes .eq i:nth-child(4) { height: 75%; animation-delay: 0.1s; }
+  @keyframes eq {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.25); }
+  }
+  .vibes-text { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .vibes-text b { color: var(--ink); font-weight: 400; }
+
+  /* Status bar */
+  .status {
+    grid-area: status;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 14px;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    font-family: var(--mono);
+  }
+  .status .sep { opacity: 0.4; }
+  .status .right { margin-left: auto; display: flex; gap: 14px; }
+  .status .blink { animation: blink 1.4s infinite; }
+  @keyframes blink { 50% { opacity: 0.3; } }
+
+  /* === Case study view === */
+  .case-view {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .case-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.15s ease;
+    align-self: flex-start;
+    letter-spacing: 0.04em;
+  }
+  .case-back:hover { color: var(--accent2); }
+  .case-back .arr { font-family: var(--mono); }
+
+  /* Telegram CTA (main page) */
+  .tg-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+    padding: 11px 18px;
+    background: var(--accent2);
+    color: #151517;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    text-decoration: none;
+    border-radius: 999px;
+    border: 1px solid var(--accent2);
+    transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .tg-cta:hover {
+    background: #151517;
+    color: var(--accent2);
+    transform: translateY(-1px);
+  }
+  .tg-cta svg { width: 14px; height: 14px; display: block; }
+  .tg-cta .arrow { font-family: var(--mono); margin-left: 2px; }
+
+  .case-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .case-title {
+    font-family: var(--sans);
+    font-size: clamp(30px, 4.4vw, 42px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    margin: 0;
+  }
+  .case-title .sub {
+    color: var(--dim);
+    font-weight: 300;
+    font-size: 0.55em;
+    font-family: var(--mono);
+    letter-spacing: 0;
+    margin-left: 6px;
+    vertical-align: middle;
+    opacity: 0.7;
+  }
+  .case-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: -4px; }
+  .case-tag {
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 5px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--accent2);
+    background: rgba(212,251,60,0.04);
+    text-transform: lowercase;
+  }
+
+  .case-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 0;
+    gap: 20px;
+  }
+  @media (max-width: 640px) { .case-meta { grid-template-columns: 1fr 1fr; } }
+  .case-meta-cell { display: flex; flex-direction: column; gap: 4px; }
+  .case-meta-cell .k {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .case-meta-cell .v {
+    font-family: var(--sans);
+    font-size: 17px;
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .case-meta-cell .v.accent { color: var(--accent2); }
+
+  .case-screen {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--panel);
+    overflow: hidden;
+  }
+  .case-screen-chrome {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel2);
+  }
+  .case-screen-chrome .dots { display: flex; gap: 6px; }
+  .case-screen-chrome .dots i {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--dim);
+  }
+  .case-screen-chrome .dots i:nth-child(1) { background: #ff5f57; }
+  .case-screen-chrome .dots i:nth-child(2) { background: #febc2e; }
+  .case-screen-chrome .dots i:nth-child(3) { background: #28c840; }
+  .case-screen-chrome .addr {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .case-screen-body {
+    position: relative;
+    height: 520px;
+    background:
+      radial-gradient(circle at 25% 20%, rgba(75,59,255,0.10), transparent 55%),
+      radial-gradient(circle at 75% 80%, rgba(212,251,60,0.07), transparent 55%),
+      var(--panel2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .case-screen-body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 32px,
+      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 120px 100%;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .case-screen-body .placeholder {
+    position: relative;
+    z-index: 1;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    padding: 8px 14px;
+    border: 1px dashed var(--line);
+    border-radius: 3px;
+    background: rgba(21,21,23,0.7);
+    backdrop-filter: blur(4px);
+    text-align: center;
+    max-width: 80%;
+    line-height: 1.5;
+  }
+  .case-screen-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    z-index: 1;
+  }
+  .case-caption {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.65;
+    padding: 12px 16px 14px;
+    background: var(--panel2);
+    border-top: 1px solid var(--line);
+  }
+
+  /* Slider controls */
+  .case-slider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--line);
+    background: var(--panel2);
+  }
+  .case-slider-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+    font-family: var(--sans);
+    font-size: 18px;
+    line-height: 1;
+  }
+  .case-slider-btn svg { width: 12px; height: 12px; display: block; }
+  .case-slider-btn:hover { color: var(--accent2); border-color: var(--accent2); }
+  .case-slider-btn:active { transform: scale(0.95); }
+  .case-slider-dots {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .case-slider-dot {
+    width: 28px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--dim);
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.15s ease, width 0.2s ease;
+  }
+  .case-slider-dot:hover { background: var(--muted); }
+  .case-slider-dot.active { background: var(--accent2); width: 36px; }
+  .case-slider-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-left: 4px;
+    min-width: 28px;
+    text-align: center;
+  }
+
+  /* Case blocks rendered as code */
+  .case-blocks { display: flex; flex-direction: column; gap: 16px; }
+  .case-code-block {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--dim);
+    border-radius: 6px;
+    padding: 14px 22px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.75;
+    color: var(--ink);
+    overflow-x: auto;
+  }
+  .case-code-block .line { white-space: nowrap; }
+  .case-code-block .ln {
+    color: var(--dim);
+    user-select: none;
+    display: inline-block;
+    width: 22px;
+    text-align: right;
+    margin-right: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .case-code-block .com { color: var(--muted); }
+  .case-code-block .kw  { color: #c77dff; }
+  .case-code-block .str { color: var(--accent2); }
+  .case-code-block .fn  { color: #ff8a4c; }
+  .case-code-block .body-row {
+    white-space: normal;
+    display: flex;
+    align-items: flex-start;
+    padding: 6px 0;
+  }
+  .case-code-block .body-row .body-text {
+    font-family: var(--sans);
+    font-size: 15.5px;
+    line-height: 1.55;
+    color: var(--ink);
+    flex: 1;
+    min-width: 0;
+    padding-left: 2px;
+  }
+  .case-code-block .hl {
+    color: var(--accent2);
+    background: rgba(212,251,60,0.08);
+    padding: 0 3px;
+    border-radius: 2px;
+  }
+
+  .case-code-block.task        { border-left-color: var(--accent); }
+  .case-code-block.task .com,
+  .case-code-block.task .fn    { color: #a798ff; }
+  .case-code-block.task .hl    { color: #a798ff; background: rgba(75,59,255,0.18); }
+
+  .case-code-block.problem     { border-left-color: #ff5f57; }
+  .case-code-block.problem .com,
+  .case-code-block.problem .fn { color: #ff8a8a; }
+  .case-code-block.problem .hl { color: #ffb0b0; background: rgba(255,95,87,0.14); }
+
+  .case-code-block.solution        { border-left-color: var(--accent2); }
+  .case-code-block.solution .com,
+  .case-code-block.solution .fn    { color: var(--accent2); }
+  .case-code-block.solution .hl    { color: var(--accent2); background: rgba(212,251,60,0.12); }
+
+  /* <em> внутри body-text подсвечивается как hl для соответствующего блока */
+  .case-code-block em {
+    font-style: normal;
+    padding: 0 3px;
+    border-radius: 2px;
+  }
+  .case-code-block.task em     { color: #a798ff; background: rgba(75,59,255,0.18); }
+  .case-code-block.problem em  { color: #ffb0b0; background: rgba(255,95,87,0.14); }
+  .case-code-block.solution em { color: var(--accent2); background: rgba(212,251,60,0.12); }
+
+  /* Dynamic case tab */
+  .tab.case-tab { border-top-color: var(--accent2); color: var(--ink); }
+  .tab .close {
+    margin-left: 2px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--dim);
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .tab .close:hover { background: var(--line); color: var(--ink); }
+
+  .tree-item.opened .tico { color: var(--accent2); }
+
+  @media (max-width: 780px) {
+    .wrap { grid-template-columns: 1fr; grid-template-areas: "top" "main" "status"; }
+    .side { display: none; }
+    .proj { grid-template-columns: 36px 1fr 90px; gap: 12px; }
+    .proj-tags, .proj-preview { display: none; }
+    .case-screen-body { height: 340px; }
+    .editor { padding: 20px 18px 80px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lang" id="lang">
+  <button data-lang="ru" class="">RU</button>
+  <button data-lang="en" class="active">EN</button>
+</div>
+
+<div class="wrap">
+  <header class="top">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <span class="crumb">~/portfolio/<b data-i18n="filename">demeshko.readme</b></span>
+    <div class="top-right">
+      <span data-i18n="ln">ln 1, col 1</span>
+      <span>utf-8</span>
+    </div>
+  </header>
+
+  <aside class="side" id="side">
+    <div class="tree-section">
+      <div class="folder" data-i18n="folderAbout">about</div>
+      <a class="tree-item active" href="#readme" data-target="readme"><span class="tico">☰</span><span class="tname">readme</span><span class="text-ext">.md</span></a>
+      <a class="tree-item" href="#stack" data-target="stack"><span class="tico">☰</span><span class="tname">stack</span><span class="text-ext">.json</span></a>
+    </div>
+    <div class="tree-section">
+      <div class="folder" data-i18n="folderProjects">projects/</div>
+      <!-- injected -->
+      <div id="side-projects">
+    <a class="tree-item" href="#scan-launch" data-target="scan-launch">
+      <span class="tico">◆</span>
+      <span class="tname">scan-launch</span>
+      <span class="text-ext">.case</span>
+    </a>
+
+    <a class="tree-item" href="#scan-compare" data-target="scan-compare">
+      <span class="tico">◆</span>
+      <span class="tname">scan-compare</span>
+      <span class="text-ext">.case</span>
+    </a>
+
+    <a class="tree-item" href="#crm-pipeline" data-target="crm-pipeline">
+      <span class="tico">◆</span>
+      <span class="tname">crm-pipeline</span>
+      <span class="text-ext">.case</span>
+    </a>
+
+    <a class="tree-item" href="#onboarding" data-target="onboarding">
+      <span class="tico">◆</span>
+      <span class="tname">onboarding</span>
+      <span class="text-ext">.case</span>
+    </a>
+
+    <a class="tree-item" href="#ai-copilot" data-target="ai-copilot">
+      <span class="tico">◆</span>
+      <span class="tname">ai-copilot</span>
+      <span class="text-ext">.case</span>
+    </a>
+
+    <a class="tree-item" href="#design-system" data-target="design-system">
+      <span class="tico">◆</span>
+      <span class="tname">design-system</span>
+      <span class="text-ext">.case</span>
+    </a>
+  </div>
+    </div>
+    <div class="tree-section">
+      <div class="folder" data-i18n="folderEtc">etc/</div>
+      <a class="tree-item" href="#contact" data-target="contact"><span class="tico">@</span><span class="tname">contact</span><span class="text-ext">.md</span></a>
+      <a class="tree-item" href="#vibes" data-target="vibes"><span class="tico">♪</span><span class="tname">vibes</span><span class="text-ext">.m3u</span></a>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="tabs">
+      <a class="tab active" href="#readme" data-tab="readme">readme.md<span class="x">×</span></a>
+      <a class="tab" href="#projects" data-tab="projects">projects/*.case<span class="x">×</span></a>
+      <a class="tab" href="#stack" data-tab="stack">stack.json<span class="x">×</span></a>
+      <a class="tab" href="#contact" data-tab="contact">contact.md<span class="x">×</span></a>
+      <a class="tab" href="#vibes" data-tab="vibes">vibes.m3u<span class="x">×</span></a>
+    </div>
+
+    <div class="editor" id="editor">
+    <section id="readme">
+      <div class="sec-marker"># readme.md · last updated 2026.04.19</div>
+      <div class="readme-head">
+        <div>
+          <h1 class="h1">anna demeshko,<br><span>product designer.</span></h1>
+          <p class="lede"><span class="hi">hi —</span> i turn complex b2b processes into tools people actually want to live in. 5+ years across enterprise, saas and studios. i listen to ozzy, read montaigne, and design interfaces with character.</p>
+        </div>
+        <div class="meta-block">
+          <div class="meta-row"><span class="k">projects shipped</span><span class="v">10+</span></div><div class="meta-row"><span class="k">case studies</span><span class="v">7</span></div><div class="meta-row"><span class="k">experience</span><span class="v">enterprise / saas / studio</span></div><div class="meta-row"><span class="k">open to</span><span class="v">full-time, contract</span></div><div class="meta-row"><span class="k">location</span><span class="v">remote, gmt+3</span></div><div class="meta-row"><span class="k">languages</span><span class="v">ru · en</span></div>
+        </div>
+      </div>
+
+      <div class="code" style="margin-top:32px;">
+        <div><span class="ln">1</span><span class="com">// what i do best</span></div>
+        <div><span class="ln">2</span><span class="kw">export const</span> strengths = [</div>
+        <div><span class="ln">3</span>&nbsp;&nbsp;<span class="str">'complex workflows → simple flows'</span>,</div><div><span class="ln">4</span>&nbsp;&nbsp;<span class="str">'enterprise crm &amp; b2b saas'</span>,</div><div><span class="ln">5</span>&nbsp;&nbsp;<span class="str">'data-dense interfaces &amp; tables'</span>,</div><div><span class="ln">6</span>&nbsp;&nbsp;<span class="str">'0→1 product with research'</span>,</div>
+        <div><span class="ln">7</span>];</div>
+        <div><span class="ln">8</span>&nbsp;</div>
+        <div><span class="ln">9</span><span class="kw">const</span> <span class="fn">today</span> = () =&gt; <span class="str">'redesigning an appsec platform, writing more'</span>;</div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="slash">./</span>projects<span class="slash">/</span></h2>
+        <div class="sec-meta">6 projects · sorted by recency</div>
+      </div>
+      <div class="projects">
+        
+          <a class="proj" href="#scan-launch" id="scan-launch" data-proj="scan-launch">
+            <div class="proj-idx">01</div>
+            <div class="proj-main">
+              <div class="proj-name">scan launch<span class="ext">.case</span></div>
+              <div class="proj-desc">users couldn't tell when a scan actually started</div>
+            </div>
+            <div class="proj-tags">
+              <span class="proj-tag">appsec</span><span class="proj-tag">b2b</span><span class="proj-tag">saas</span>
+            </div>
+            <div class="proj-metric"><span class="val">−42%</span><span class="lbl">time-to-scan</span></div>
+            <div class="proj-preview pv-table"></div>
+          </a>
+        
+          <a class="proj" href="#scan-compare" id="scan-compare" data-proj="scan-compare">
+            <div class="proj-idx">02</div>
+            <div class="proj-main">
+              <div class="proj-name">scan comparison<span class="ext">.case</span></div>
+              <div class="proj-desc">auditors struggled to see what changed between releases</div>
+            </div>
+            <div class="proj-tags">
+              <span class="proj-tag">appsec</span><span class="proj-tag">b2b</span><span class="proj-tag">saas</span>
+            </div>
+            <div class="proj-metric"><span class="val">×3.1</span><span class="lbl">audit speed</span></div>
+            <div class="proj-preview pv-diff"></div>
+          </a>
+        
+          <a class="proj" href="#crm-pipeline" id="crm-pipeline" data-proj="crm-pipeline">
+            <div class="proj-idx">03</div>
+            <div class="proj-main">
+              <div class="proj-name">b2b crm pipeline<span class="ext">.case</span></div>
+              <div class="proj-desc">sales managers were losing deals at qualification</div>
+            </div>
+            <div class="proj-tags">
+              <span class="proj-tag">crm</span><span class="proj-tag">b2b</span><span class="proj-tag">enterprise</span>
+            </div>
+            <div class="proj-metric"><span class="val">+28%</span><span class="lbl">conversion</span></div>
+            <div class="proj-preview pv-kanban"></div>
+          </a>
+        
+          <a class="proj" href="#onboarding" id="onboarding" data-proj="onboarding">
+            <div class="proj-idx">04</div>
+            <div class="proj-main">
+              <div class="proj-name">onboarding without tears<span class="ext">.case</span></div>
+              <div class="proj-desc">new users weren't reaching value after signup</div>
+            </div>
+            <div class="proj-tags">
+              <span class="proj-tag">fintech</span><span class="proj-tag">saas</span><span class="proj-tag">growth</span>
+            </div>
+            <div class="proj-metric"><span class="val">62%</span><span class="lbl">day-1 activation</span></div>
+            <div class="proj-preview pv-steps"></div>
+          </a>
+        
+          <a class="proj" href="#ai-copilot" id="ai-copilot" data-proj="ai-copilot">
+            <div class="proj-idx">05</div>
+            <div class="proj-main">
+              <div class="proj-name">ai copilot for analysts<span class="ext">.case</span></div>
+              <div class="proj-desc">analysts didn't trust ai answers without context</div>
+            </div>
+            <div class="proj-tags">
+              <span class="proj-tag">ai</span><span class="proj-tag">b2b</span><span class="proj-tag">research</span>
+            </div>
+            <div class="proj-metric"><span class="val">4.6/5</span><span class="lbl">csat</span></div>
+            <div class="proj-preview pv-chat"></div>
+          </a>
+        
+          <a class="proj" href="#design-system" id="design-system" data-proj="design-system">
+            <div class="proj-idx">06</div>
+            <div class="proj-main">
+              <div class="proj-name">design system from scratch<span class="ext">.case</span></div>
+              <div class="proj-desc">3 teams were drawing the same buttons differently</div>
+            </div>
+            <div class="proj-tags">
+              <span class="proj-tag">ds</span><span class="proj-tag">tokens</span><span class="proj-tag">saas</span>
+            </div>
+            <div class="proj-metric"><span class="val">120+</span><span class="lbl">components</span></div>
+            <div class="proj-preview pv-tokens"></div>
+          </a>
+        
+      </div>
+    </section>
+
+    <section id="stack">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="slash">./</span>stack<span class="slash">.json</span></h2>
+        <div class="sec-meta">tools &amp; practices</div>
+      </div>
+      <div class="stack-grid">
+        <div class="stack-cell"><b>Fi</b><span>figma</span></div><div class="stack-cell"><b>Ae</b><span>after effects</span></div><div class="stack-cell"><b></b><span>html / css</span></div><div class="stack-cell"><b>Jr</b><span>jira</span></div><div class="stack-cell"><b>Fr</b><span>framer</span></div><div class="stack-cell"><b>Sk</b><span>sketch</span></div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="slash">./</span>contact<span class="slash">.md</span></h2>
+        <div class="sec-meta">4 ways to reach me</div>
+      </div>
+      <div class="contacts">
+        
+          <a class="contact" href="#">
+            <span class="k">telegram</span>
+            <span>@anna_demeshko</span>
+            <span class="arrow">↗</span>
+          </a>
+        
+          <a class="contact" href="mailto:hi@demeshko.design">
+            <span class="k">email</span>
+            <span>hi@demeshko.design</span>
+            <span class="arrow">↗</span>
+          </a>
+        
+          <a class="contact" href="#">
+            <span class="k">linkedin</span>
+            <span>in/anna-demeshko</span>
+            <span class="arrow">↗</span>
+          </a>
+        
+          <a class="contact" href="#">
+            <span class="k">cv</span>
+            <span>cv-2026.pdf</span>
+            <span class="arrow">↗</span>
+          </a>
+        
+      </div>
+    </section>
+
+    <section id="vibes">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="slash">./</span>vibes<span class="slash">.m3u</span></h2>
+        <div class="sec-meta">what plays while i design</div>
+      </div>
+      <div class="vibes" id="vibes-box">
+        <span class="eq"><i></i><i></i><i></i><i></i></span>
+        <span class="vibes-text">now playing: <b id="vibes-track">crazy train — ozzy osbourne</b></span>
+      </div>
+
+      <div class="code" style="margin-top:20px;">
+        <div><span class="ln">1</span><span class="com">// playlist</span></div>
+        <div><span class="ln">2</span><span class="fn">▶</span> <span class="str">crazy train — ozzy osbourne</span></div><div><span class="ln">3</span><span class="fn"> </span> <span class="com">iron man — black sabbath</span></div><div><span class="ln">4</span><span class="fn"> </span> <span class="com">rock you like a hurricane — scorpions</span></div><div><span class="ln">5</span><span class="fn"> </span> <span class="com">essais, livre i — m. montaigne</span></div><div><span class="ln">6</span><span class="fn"> </span> <span class="com">paranoid — black sabbath</span></div>
+        <div><span class="ln">7</span>&nbsp;</div>
+        <div><span class="ln">8</span><span class="com">// "que sais-je?" — m. montaigne, 1580</span></div>
+      </div>
+    </section>
+  </div>
+  </main>
+
+  <footer class="status">
+    <span class="blink">●</span>
+    <span data-i18n="statReady">ready</span>
+    <span class="sep">|</span>
+    <span>branch: main</span>
+    <span class="sep">|</span>
+    <span>📍 gmt+3</span>
+    <div class="right">
+      <span>@anna_demeshko</span>
+      <span class="sep">|</span>
+      <span>hi@demeshko.design</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+// ===== DATA =====
+const DATA = {
+  ru: {
+    name: "Анна Демешко",
+    filename: "демешко.readme",
+    role: "product designer",
+    h1Line1: "анна демешко,",
+    h1Line2: "product designer.",
+    ledeHi: "привет —",
+    lede: "я превращаю сложные b2b-процессы в инструменты, в которых хочется жить. 5+ лет в enterprise, saas и студиях. слушаю оззи, читаю монтеня, проектирую интерфейсы с характером.",
+    stats: {
+      "projects shipped": "10+",
+      "case studies": "7",
+      "experience": "enterprise / saas / studio",
+      "open to": "full-time, контракт",
+      "location": "remote, gmt+3",
+      "languages": "ru · en"
+    },
+    secMarker: "# readme.md · обновлено 19.04.2026",
+    codeStrengths: [
+      "сложные флоу → понятные экраны",
+      "enterprise crm и b2b saas",
+      "data-dense интерфейсы и таблицы",
+      "0→1 продукты с ресёрчем"
+    ],
+    codeTodayLabel: "today",
+    codeToday: "редизайн appsec-платформы, больше пишу",
+    codeComment: "// в чём сильна",
+    ctaTelegram: "написать в телеграм",
+    secProjectsTitle: "projects",
+    secProjectsMeta: "%d проектов · сортировка по дате",
+    secStackTitle: "stack",
+    secStackMeta: "инструменты и практики",
+    secContactTitle: "contact",
+    secContactMeta: "4 способа написать",
+    secVibesTitle: "vibes",
+    secVibesMeta: "что играет, пока я проектирую",
+    vibesLabel: "сейчас играет:",
+    folderAbout: "about",
+    folderProjects: "projects/",
+    folderEtc: "etc/",
+    statReady: "ready",
+    ln: "стр 1, кол 1",
+    caseStudyLabel: "case study",
+    caseBackLabel: "к списку проектов",
+    caseTaskLabel: "задача",
+    caseProblemLabel: "проблема",
+    caseSolutionLabel: "решение",
+    metaYear: "год",
+    metaRole: "роль",
+    screenPlaceholder: "скриншот интерфейса",
+    stack: [
+      { short: "Fi", name: "figma" },
+      { short: "Ae", name: "after effects" },
+      { short: "</>", name: "html / css" },
+      { short: "Jr", name: "jira" },
+      { short: "Fr", name: "framer" },
+      { short: "Sk", name: "sketch" }
+    ],
+    contacts: [
+      { label: "telegram", value: "@anna_demeshko", href: "#" },
+      { label: "email", value: "hi@demeshko.design", href: "mailto:hi@demeshko.design" },
+      { label: "linkedin", value: "in/anna-demeshko", href: "#" },
+      { label: "cv", value: "cv-2026.pdf", href: "#" }
+    ],
+    tracks: [
+      "crazy train — ozzy osbourne",
+      "iron man — black sabbath",
+      "rock you like a hurricane — scorpions",
+      "essais, livre i — m. montaigne",
+      "paranoid — black sabbath"
+    ],
+    projects: [
+      { id:"scan-launch", title:"запуск сканирования", subtitle:"appsec platform · инициация сканирования", year:"2025", tags:["appsec","b2b","saas"], metric:{value:"−42%", label:"time-to-scan"}, problem:"пользователи не понимали, когда сканирование реально запущено", role:"lead product designer", cover:"table",
+        slides:[
+          { image:"assets/projects/scan-launch/02-inactive.png",  alt:"Модалка запуска — CTA disabled", caption:"1 / инициация: модалка запуска открыта, CTA неактивен, пока не выбрана конфигурация — защита от случайного запуска." },
+          { image:"assets/projects/scan-launch/03-filled.png",    alt:"Форма запуска заполнена",        caption:"2 / форма: инженер выбирает версию и конфигурацию сканера, CTA разблокируется, параметры валидируются на лету." },
+          { image:"assets/projects/scan-launch/04-loading.png",   alt:"Идёт сканирование",              caption:"3 / прогресс: после запуска видно живой статус задачи — queued → running → done с таймкодом." },
+          { image:"assets/projects/scan-launch/05-blocking.png",  alt:"Блокирующий оверлей",            caption:"4 / защита: пока задача в работе, блокирующий оверлей не даёт отправить повторный запрос и создать дубликат." },
+          { image:"assets/projects/scan-launch/06-completed.png", alt:"Новое сканирование в таблице",   caption:"5 / результат: завершённое сканирование появляется в таблице — со статусом, фильтрами и прямой ссылкой на отчёт." }
+        ],
+        task:"добавить функцию <em>ручного запуска сканирования</em>, чтобы команды безопасности могли инициировать проверку нужной версии прямо из интерфейса без обращения к инструментам вне платформы.",
+        problemFull:"интерфейс запускал сканирование, но не давал фидбека: пользователи <em>не понимали, дошёл ли запрос до сервера</em>, стояла ли задача в очереди или уже считалась. инженеры нажимали кнопку повторно, создавали дубликаты и теряли время на уточнение статуса у саппорта.",
+        solution:"переработали флоу: ввели явные состояния (queued / running / done / failed) с таймкодами, добавили лайв-прогресс и <em>подтверждение запуска</em> с понятным id задачи. таблица сканирований получила фильтры по статусу и прямой линк на лог."
+      },
+      { id:"scan-compare", title:"сравнение сканирований", subtitle:"appsec platform · side-by-side diff", year:"2025", tags:["appsec","b2b","saas"], metric:{value:"×3.1", label:"скорость аудита"}, problem:"аудиторам было сложно увидеть, что изменилось между релизами", role:"lead product designer", cover:"diff",
+        slides:[
+          { cover:"table", caption:"1 / выбор: пользователь отмечает два сканирования чекбоксами в таблице. строки 5 и 2 активны — кнопка «сравнение» разблокирована." },
+          { cover:"diff",  caption:"2 / сравнение: side-by-side вид с метаданными каждого скана. таблица компонентов подсвечивает изменения — зелёным новые уязвимости, красным устранённые." },
+          { cover:"steps", caption:"3 / дельты: счётчики (+/−) по уровням cvss. детальная панель раскрывает нарушения с фильтрацией по severity." }
+        ],
+        caption:"пользователь выбирает два сканирования через чекбоксы в таблице. строки 5 и 2 отмечены — интерфейс активирует кнопку «сравнение». таблица показывает ключевые атрибуты: окружение, способ запуска, количество нарушений и статус.",
+        task:"добавить функцию сравнения результатов сканирований, чтобы команды безопасности могли <em>отслеживать динамику уязвимостей</em> между версиями приложений и коммитами.",
+        problemFull:"пользователи не могли <em>сопоставить результаты</em> двух сканирований без ручного анализа. было непонятно, какие уязвимости появились после нового деплоя, какие устранены, а какие изменили уровень критичности. это <em>замедляло реакцию на угрозы</em> и усложняло аудит безопасности между релизами.",
+        solution:"спроектировали функцию сравнения: пользователь выбирает два скана из списка и нажимает «сравнение» — открывается side-by-side вид с метаданными каждого скана (окружение, способ запуска, коммит). таблица компонентов <em>подсвечивает изменения цветом</em>: зелёным — новые уязвимости, красным — устранённые. дельта-счётчики (+/−) <em>показывают динамику</em> по уровням cvss, а детальная панель раскрывает нарушения с фильтрацией по severity."
+      },
+      { id:"crm-pipeline", title:"воронка для b2b crm", subtitle:"enterprise crm · редизайн pipeline", year:"2024", tags:["crm","b2b","enterprise"], metric:{value:"+28%", label:"конверсия"}, problem:"менеджеры теряли сделки на этапе квалификации", role:"product designer", cover:"kanban",
+        slides:[
+          { cover:"kanban", caption:"1 / воронка: drag-n-drop между стадиями. цвет карточки показывает возраст сделки, иконка — ответственного." },
+          { cover:"table",  caption:"2 / карточка: 5 ключевых атрибутов на поверхности + чек-лист квалификации прямо в фокусе — без переключений по табам." },
+          { cover:"steps",  caption:"3 / дашборд: мини-график конверсии по стадиям под воронкой — лиды видят, где скапливаются проблемы." }
+        ],
+        caption:"kanban-воронка с drag-n-drop карточками: цвет и иконка показывают возраст сделки, стоимость и ответственного. на этапе «квалификация» — чек-лист критериев прямо в карточке.",
+        task:"перепроектировать воронку продаж так, чтобы менеджер на этапе квалификации <em>видел ключевые атрибуты сделки</em> без необходимости открывать детальную карточку.",
+        problemFull:"сделки <em>застревали на квалификации</em>: в карточке было 40+ полей, но менеджер не видел, чего именно не хватает для перехода дальше. возраст сделки, сумма, источник — всё было спрятано по табам. руководители не могли быстро понять, где скапливаются проблемы.",
+        solution:"вынесли на карточку 5 главных атрибутов, добавили <em>цветовую кодировку по возрасту</em> и чек-лист квалификации прямо в фокусе. под воронкой — мини-дашборд с конверсией по этапам. переходы между этапами — через drag-n-drop или ⌘↵ шорткат."
+      },
+      { id:"onboarding", title:"онбординг без слёз", subtitle:"fintech saas · activation flow", year:"2024", tags:["fintech","saas","growth"], metric:{value:"62%", label:"day-1 активация"}, problem:"после регистрации пользователи не доходили до ценности", role:"product designer", cover:"steps",
+        slides:[
+          { cover:"steps",  caption:"1 / 3 шага: прогресс-индикатор сверху, каждый шаг — одна задача, skippable, с сохранением прогресса." },
+          { cover:"chat",   caption:"2 / контекст: персональный гайд показывает, что делать дальше — без долгих туториалов для опытных." },
+          { cover:"tokens", caption:"3 / пустые состояния: превращены в мини-квесты — «добавь первый счёт → получи график»." }
+        ],
+        caption:"прогресс-индикатор из 3 шагов сверху; каждый шаг — отдельный компактный экран с одной задачей, skippable, с кнопкой «позже» и сохранением прогресса.",
+        task:"спроектировать онбординг, который <em>доводит до ценности за 3 шага</em> и позволяет вернуться к пропущенному — без фрустрации у тех, кто уже знаком с продуктом.",
+        problemFull:"после регистрации пользователь попадал на пустой дашборд без контекста. <em>day-1 активация была 24%</em>: большинство не понимали, с чего начать, и уходили. опытные пользователи, наоборот, ненавидели длинные туториалы.",
+        solution:"сократили онбординг до трёх шагов: подключить счёт → настроить первое правило → увидеть первую транзакцию. каждый шаг <em>скиппабельный</em>, с сохранением прогресса. пустые состояния превратили в мини-квесты: «добавь первый счёт → получи график»."
+      },
+      { id:"ai-copilot", title:"ai-ассистент для аналитиков", subtitle:"b2b analytics · conversational ui", year:"2024", tags:["ai","b2b","research"], metric:{value:"4.6/5", label:"csat"}, problem:"аналитики не доверяли ai-ответам без контекста", role:"product designer, research", cover:"chat",
+        slides:[
+          { cover:"chat",  caption:"1 / запрос: чат справа от дашборда, ассистент понимает контекст открытого отчёта." },
+          { cover:"diff",  caption:"2 / пруфы: каждый ответ с цитатами источников и раскрывающимся sql-запросом — можно проверить данные одним кликом." },
+          { cover:"table", caption:"3 / использование: кнопка «в отчёт» копирует и данные, и контекст в буфер — ответ сразу применим в работе." }
+        ],
+        caption:"чат справа от дашборда: каждый ответ ai — с цитатами источников, возможностью раскрыть исходный sql-запрос и кнопкой «использовать в отчёте».",
+        task:"сделать так, чтобы ai-ответы встраивались в рабочий процесс аналитика и <em>давали возможность проверить источник</em> одним кликом.",
+        problemFull:"аналитики получали от ассистента ответы без прозрачности: непонятно, на каких данных они построены. <em>без пруфов они не могли использовать ответ в отчёте</em>, и ассистент превращался в второй гугл — любопытно, но не применимо в работе.",
+        solution:"каждый ответ теперь содержит <em>цитаты со ссылками на источник</em>, раскрывающийся sql-запрос и маркер уверенности модели. кнопка «использовать в отчёте» копирует и данные, и контекст в буфер. при низкой уверенности ассистент сам предлагает уточнить запрос."
+      },
+      { id:"design-system", title:"design system с нуля", subtitle:"b2b platform · токены + компоненты", year:"2023", tags:["ds","tokens","saas"], metric:{value:"120+", label:"компонентов"}, problem:"3 команды рисовали одни и те же кнопки по-разному", role:"design system lead", cover:"tokens",
+        caption:"токены в 3 уровня (primitive → semantic → component), 120+ компонентов в figma с code-connect на react. внутренняя документация — рядом с компонентом.",
+        task:"собрать design system, которая <em>объединяет 3 продуктовые команды</em>, но не становится тормозом — с быстрым онбордингом и понятной процедурой изменений.",
+        problemFull:"3 команды рисовали одни и те же кнопки по-разному, инженеры <em>дублировали код</em>, редизайны тянулись месяцами. единого словаря токенов не было — цвета жили в головах дизайнеров. онбординг нового дизайнера занимал 2 недели.",
+        solution:"построили трёхуровневую систему токенов (primitive → semantic → component), 120+ компонентов в figma с code-connect. завели публичный rfc-процесс: любое изменение системы проходит через обсуждение. онбординг сократился до 3 дней."
+      }
+    ]
+  },
+  en: {
+    name: "Anna Demeshko",
+    filename: "demeshko.readme",
+    role: "product designer",
+    h1Line1: "anna demeshko,",
+    h1Line2: "product designer.",
+    ledeHi: "hi —",
+    lede: "i turn complex b2b processes into tools people actually want to live in. 5+ years across enterprise, saas and studios. i listen to ozzy, read montaigne, and design interfaces with character.",
+    stats: {
+      "projects shipped": "10+",
+      "case studies": "7",
+      "experience": "enterprise / saas / studio",
+      "open to": "full-time, contract",
+      "location": "remote, gmt+3",
+      "languages": "ru · en"
+    },
+    secMarker: "# readme.md · last updated 2026.04.19",
+    codeStrengths: [
+      "complex workflows → simple flows",
+      "enterprise crm & b2b saas",
+      "data-dense interfaces & tables",
+      "0→1 product with research"
+    ],
+    codeTodayLabel: "today",
+    codeToday: "redesigning an appsec platform, writing more",
+    codeComment: "// what i do best",
+    ctaTelegram: "message me on telegram",
+    secProjectsTitle: "projects",
+    secProjectsMeta: "%d projects · sorted by recency",
+    secStackTitle: "stack",
+    secStackMeta: "tools & practices",
+    secContactTitle: "contact",
+    secContactMeta: "4 ways to reach me",
+    secVibesTitle: "vibes",
+    secVibesMeta: "what plays while i design",
+    vibesLabel: "now playing:",
+    folderAbout: "about",
+    folderProjects: "projects/",
+    folderEtc: "etc/",
+    statReady: "ready",
+    ln: "ln 1, col 1",
+    caseStudyLabel: "case study",
+    caseBackLabel: "back to projects",
+    caseTaskLabel: "task",
+    caseProblemLabel: "problem",
+    caseSolutionLabel: "solution",
+    metaYear: "year",
+    metaRole: "role",
+    screenPlaceholder: "interface screenshot",
+    stack: [
+      { short: "Fi", name: "figma" },
+      { short: "Ae", name: "after effects" },
+      { short: "</>", name: "html / css" },
+      { short: "Jr", name: "jira" },
+      { short: "Fr", name: "framer" },
+      { short: "Sk", name: "sketch" }
+    ],
+    contacts: [
+      { label: "telegram", value: "@anna_demeshko", href: "#" },
+      { label: "email", value: "hi@demeshko.design", href: "mailto:hi@demeshko.design" },
+      { label: "linkedin", value: "in/anna-demeshko", href: "#" },
+      { label: "cv", value: "cv-2026.pdf", href: "#" }
+    ],
+    tracks: [
+      "crazy train — ozzy osbourne",
+      "iron man — black sabbath",
+      "rock you like a hurricane — scorpions",
+      "essais, livre i — m. montaigne",
+      "paranoid — black sabbath"
+    ],
+    projects: [
+      { id:"scan-launch", title:"scan launch", subtitle:"appsec platform · initiation flow", year:"2025", tags:["appsec","b2b","saas"], metric:{value:"−42%", label:"time-to-scan"}, problem:"users couldn't tell when a scan actually started", role:"lead product designer", cover:"table",
+        slides:[
+          { image:"assets/projects/scan-launch/02-inactive.png",  alt:"Launch modal — CTA disabled",   caption:"1 / initiation: launch modal open, the CTA stays disabled until a config is picked — guard against accidental runs." },
+          { image:"assets/projects/scan-launch/03-filled.png",    alt:"Launch form filled in",         caption:"2 / form: engineer selects a version and scanner config, the CTA unlocks, params are validated on the fly." },
+          { image:"assets/projects/scan-launch/04-loading.png",   alt:"Scan in progress",              caption:"3 / progress: live job status after launch — queued → running → done with a timestamp." },
+          { image:"assets/projects/scan-launch/05-blocking.png",  alt:"Blocking overlay",              caption:"4 / guard: while the job is running, a blocking overlay prevents re-submitting and creating a duplicate." },
+          { image:"assets/projects/scan-launch/06-completed.png", alt:"New scan appears in the table", caption:"5 / result: the completed scan lands in the table — with status, filters and a direct link to the report." }
+        ],
+        caption:"user picks a project and scanner config in a compact form; once launched, the table shows live status — queued → running → done.",
+        task:"add a <em>manual scan launch</em> feature so security teams can initiate a check of any version directly from the interface — without jumping to tools outside the platform.",
+        problemFull:"the interface triggered scans but gave no feedback: users <em>couldn't tell if the request reached the server</em>, if the job was queued, or if it was already running. engineers clicked the button again, created duplicates, and wasted time pinging support for status.",
+        solution:"reworked the flow: introduced explicit states (queued / running / done / failed) with timestamps, added live progress and <em>a launch confirmation</em> with a clear job id. the scan table got status filters and a direct link to the log."
+      },
+      { id:"scan-compare", title:"scan comparison", subtitle:"appsec platform · side-by-side diff", year:"2025", tags:["appsec","b2b","saas"], metric:{value:"×3.1", label:"audit speed"}, problem:"auditors struggled to see what changed between releases", role:"lead product designer", cover:"diff",
+        slides:[
+          { cover:"table", caption:"1 / selection: user marks two scans via checkboxes in the table. rows 5 and 2 active — the «compare» button unlocks." },
+          { cover:"diff",  caption:"2 / compare: side-by-side view with metadata for each scan. the components table highlights changes — green for new vulns, red for fixed ones." },
+          { cover:"steps", caption:"3 / deltas: (+/−) counters across cvss levels. the detail panel surfaces violations filtered by severity." }
+        ],
+        caption:"user selects two scans via checkboxes in the table. rows 5 and 2 marked — interface activates the «compare» button. the table shows key attributes: environment, launch method, violation count and status.",
+        task:"add a scan comparison feature so security teams can <em>track vulnerability dynamics</em> between app versions and commits.",
+        problemFull:"users couldn't <em>reconcile results</em> of two scans without manual analysis. it was unclear which vulnerabilities appeared after a new deploy, which were fixed, and which changed severity. this <em>slowed threat response</em> and complicated security audits between releases.",
+        solution:"designed a comparison feature: user picks two scans from the list and clicks «compare» — a side-by-side view opens with metadata for each scan (environment, launch method, commit). the components table <em>highlights changes by color</em>: green for new vulns, red for fixed ones. delta counters (+/−) <em>show dynamics</em> across cvss levels, and a detail panel surfaces violations filtered by severity."
+      },
+      { id:"crm-pipeline", title:"b2b crm pipeline", subtitle:"enterprise crm · pipeline redesign", year:"2024", tags:["crm","b2b","enterprise"], metric:{value:"+28%", label:"conversion"}, problem:"sales managers were losing deals at qualification", role:"product designer", cover:"kanban",
+        slides:[
+          { cover:"kanban", caption:"1 / pipeline: drag-n-drop between stages. card color signals deal age, icon marks the owner." },
+          { cover:"table",  caption:"2 / card: 5 key attributes on the surface + qualification checklist in focus — no tab switching." },
+          { cover:"steps",  caption:"3 / dashboard: mini conversion chart under the pipeline — leads spot where deals pile up." }
+        ],
+        caption:"kanban pipeline with drag-n-drop cards: color and icon show deal age, value, and owner. the qualification stage exposes a criteria checklist right on the card.",
+        task:"redesign the sales pipeline so managers see <em>key deal attributes at qualification</em> without having to open the full card.",
+        problemFull:"deals <em>got stuck at qualification</em>: a card had 40+ fields, but managers couldn't tell what exactly was missing to move on. deal age, value, source — all buried across tabs. leads couldn't quickly see where bottlenecks piled up.",
+        solution:"surfaced 5 key attributes on the card, added <em>color coding by age</em>, and put the qualification checklist front and center. a mini-dashboard under the pipeline shows stage conversion. transitions happen via drag-n-drop or a ⌘↵ shortcut."
+      },
+      { id:"onboarding", title:"onboarding without tears", subtitle:"fintech saas · activation flow", year:"2024", tags:["fintech","saas","growth"], metric:{value:"62%", label:"day-1 activation"}, problem:"new users weren't reaching value after signup", role:"product designer", cover:"steps",
+        slides:[
+          { cover:"steps",  caption:"1 / 3 steps: progress indicator on top, each step — one task, skippable, with saved progress." },
+          { cover:"chat",   caption:"2 / context: a personal guide hints what to do next — no long tutorials for the experienced." },
+          { cover:"tokens", caption:"3 / empty states: turned into mini-quests — «add your first account → unlock the chart»." }
+        ],
+        caption:"3-step progress indicator at the top; each step is a focused screen with one task, skippable, with a «later» button and saved progress.",
+        task:"design an onboarding that <em>gets users to value in 3 steps</em> and lets them come back to skipped ones — without frustrating the experienced.",
+        problemFull:"after signup, users landed on an empty dashboard with no context. <em>day-1 activation was 24%</em>: most didn't know where to start and bounced. experienced users, on the flip side, hated long tutorials.",
+        solution:"trimmed onboarding to three steps: connect account → set up first rule → see first transaction. every step is <em>skippable</em>, with saved progress. empty states became mini-quests: «add your first account → unlock the chart»."
+      },
+      { id:"ai-copilot", title:"ai copilot for analysts", subtitle:"b2b analytics · conversational ui", year:"2024", tags:["ai","b2b","research"], metric:{value:"4.6/5", label:"csat"}, problem:"analysts didn't trust ai answers without context", role:"product designer, research", cover:"chat",
+        slides:[
+          { cover:"chat",  caption:"1 / query: chat sits next to the dashboard, the assistant understands the open report's context." },
+          { cover:"diff",  caption:"2 / proofs: every answer carries source citations and an expandable sql query — verify data in one click." },
+          { cover:"table", caption:"3 / usage: the «use in report» button copies both data and context to the clipboard — instantly applicable." }
+        ],
+        caption:"chat panel next to the dashboard: every ai answer comes with source citations, an expandable raw sql query, and a «use in report» button.",
+        task:"make ai answers fit into the analyst's workflow and <em>let them verify the source</em> in one click.",
+        problemFull:"analysts got answers from the assistant with no transparency: they couldn't tell which data backed them. <em>without proof they couldn't use the answer in a report</em>, and the assistant turned into a second google — curious, but not usable at work.",
+        solution:"every answer now carries <em>citations linked to sources</em>, an expandable sql query, and a model confidence marker. «use in report» copies both data and context to the clipboard. when confidence is low, the assistant asks to refine the query.",
+      },
+      { id:"design-system", title:"design system from scratch", subtitle:"b2b platform · tokens + components", year:"2023", tags:["ds","tokens","saas"], metric:{value:"120+", label:"components"}, problem:"3 teams were drawing the same buttons differently", role:"design system lead", cover:"tokens",
+        caption:"3-layer tokens (primitive → semantic → component), 120+ figma components with code-connect to react. internal docs live next to each component.",
+        task:"build a design system that <em>aligns 3 product teams</em> but doesn't become a bottleneck — fast onboarding, clear change process.",
+        problemFull:"3 teams drew the same buttons differently, engineers <em>duplicated code</em>, redesigns dragged on for months. there was no token vocabulary — colors lived in designers' heads. onboarding a new designer took 2 weeks.",
+        solution:"built a 3-layer token system (primitive → semantic → component), 120+ figma components with code-connect. introduced a public rfc process: any system change goes through review. onboarding shrank to 3 days."
+      }
+    ]
+  }
+};
+
+// ===== STATE =====
+let currentCaseId = null;
+let currentLang = 'ru';
+let tracksIdx = 0;
+let mainScrollWired = false;
+
+// ===== RENDER =====
+function render(lang) {
+  const d = DATA[lang];
+  currentLang = lang;
+  document.documentElement.lang = lang;
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.dataset.i18n;
+    if (d[k]) el.textContent = d[k];
+  });
+  const fnameEl = document.querySelector('[data-i18n="filename"]');
+  if (fnameEl) fnameEl.textContent = currentCaseId ? `${currentCaseId}.case` : d.filename;
+
+  renderSidebar(d);
+  renderTabs(d);
+
+  const editor = document.getElementById('editor');
+  if (currentCaseId) {
+    const p = d.projects.find(pr => pr.id === currentCaseId);
+    if (p) {
+      editor.innerHTML = renderCase(p, d);
+      const backBtn = document.getElementById('case-back-btn');
+      if (backBtn) backBtn.addEventListener('click', closeCase);
+      wireCase(p, d);
+      document.getElementById('main').scrollTo({ top: 0 });
+    } else {
+      currentCaseId = null;
+    }
+  }
+  if (!currentCaseId) {
+    editor.innerHTML = renderMain(d);
+    wireMain(d);
+  }
+
+  wireSidebarAndTabs();
+  setupScrollSpy();
+}
+
+function renderSidebar(d) {
+  const sideProj = document.getElementById('side-projects');
+  sideProj.innerHTML = d.projects.map(p => `
+    <a class="tree-item${p.id === currentCaseId ? ' active opened' : ''}" href="#${p.id}" data-target="${p.id}" data-proj-item="1">
+      <span class="tico">◆</span>
+      <span class="tname">${p.id}</span>
+      <span class="text-ext">.case</span>
+    </a>
+  `).join('');
+}
+
+function renderTabs(d) {
+  const tabsEl = document.querySelector('.tabs');
+  const base = [
+    { id: 'readme',   label: 'readme.md' },
+    { id: 'projects', label: 'projects/*.case' },
+    { id: 'stack',    label: 'stack.json' },
+    { id: 'contact',  label: 'contact.md' },
+    { id: 'vibes',    label: 'vibes.m3u' }
+  ].map(t => `<a class="tab" href="#${t.id}" data-tab="${t.id}">${t.label}<span class="x">×</span></a>`).join('');
+  const caseTab = currentCaseId
+    ? `<a class="tab case-tab active" href="#case" data-tab="case">${currentCaseId}.case<span class="close" data-close-case="1">×</span></a>`
+    : '';
+  tabsEl.innerHTML = base + caseTab;
+}
+
+function renderMain(d) {
+  return `
+    <section id="readme">
+      <div class="sec-marker">${d.secMarker}</div>
+      <div class="readme-head">
+        <div>
+          <h1 class="h1">${d.h1Line1}<br/><span>${d.h1Line2}</span></h1>
+          <p class="lede"><span class="hi">${d.ledeHi}</span> ${d.lede}</p>
+          <a class="tg-cta" href="https://t.me/annademeshko" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.78 15.28l-.4 4.04c.57 0 .81-.24 1.11-.53l2.66-2.54 5.52 4.04c1.01.56 1.73.27 2-.94l3.63-17c.35-1.52-.55-2.11-1.53-1.75L1.5 9.34C.02 9.93.04 10.77 1.25 11.14l5.62 1.75 13.06-8.23c.61-.41 1.17-.18.71.22L9.78 15.28z"/></svg>
+            ${d.ctaTelegram}
+            <span class="arrow">↗</span>
+          </a>
+        </div>
+        <div class="meta-block">
+          ${Object.entries(d.stats).map(([k,v]) => `<div class="meta-row"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('')}
+        </div>
+      </div>
+
+      <div class="code" style="margin-top:32px;">
+        <div><span class="ln">1</span><span class="com">${d.codeComment}</span></div>
+        <div><span class="ln">2</span><span class="kw">export const</span> strengths = [</div>
+        ${d.codeStrengths.map((s,i) => `<div><span class="ln">${i+3}</span>&nbsp;&nbsp;<span class="str">'${s}'</span>,</div>`).join('')}
+        <div><span class="ln">${3+d.codeStrengths.length}</span>];</div>
+        <div><span class="ln">${4+d.codeStrengths.length}</span>&nbsp;</div>
+        <div><span class="ln">${5+d.codeStrengths.length}</span><span class="kw">const</span> <span class="fn">${d.codeTodayLabel}</span> = () =&gt; <span class="str">'${d.codeToday}'</span>;</div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="slash">./</span>${d.secProjectsTitle}<span class="slash">/</span></h2>
+        <div class="sec-meta">${d.secProjectsMeta.replace('%d', d.projects.length)}</div>
+      </div>
+      <div class="projects">
+        ${d.projects.map((p,i) => `
+          <a class="proj" href="#${p.id}" id="${p.id}" data-proj="${p.id}">
+            <div class="proj-idx">${String(i+1).padStart(2,'0')}</div>
+            <div class="proj-main">
+              <div class="proj-name">${p.title}<span class="ext">.case</span></div>
+              <div class="proj-desc">${p.problem}</div>
+            </div>
+            <div class="proj-tags">
+              ${p.tags.map(t => `<span class="proj-tag">${t}</span>`).join('')}
+            </div>
+            <div class="proj-metric"><span class="val">${p.metric.value}</span><span class="lbl">${p.metric.label}</span></div>
+            <div class="proj-preview pv-${p.cover}"></div>
+          </a>
+        `).join('')}
+      </div>
+    </section>
+
+    <section id="stack">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="slash">./</span>${d.secStackTitle}<span class="slash">.json</span></h2>
+        <div class="sec-meta">${d.secStackMeta}</div>
+      </div>
+      <div class="stack-grid">
+        ${d.stack.map(s => `<div class="stack-cell"><b>${s.short}</b><span>${s.name}</span></div>`).join('')}
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="slash">./</span>${d.secContactTitle}<span class="slash">.md</span></h2>
+        <div class="sec-meta">${d.secContactMeta}</div>
+      </div>
+      <div class="contacts">
+        ${d.contacts.map(c => `
+          <a class="contact" href="${c.href}">
+            <span class="k">${c.label}</span>
+            <span>${c.value}</span>
+            <span class="arrow">↗</span>
+          </a>
+        `).join('')}
+      </div>
+    </section>
+
+    <section id="vibes">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="slash">./</span>${d.secVibesTitle}<span class="slash">.m3u</span></h2>
+        <div class="sec-meta">${d.secVibesMeta}</div>
+      </div>
+      <div class="vibes" id="vibes-box">
+        <span class="eq"><i></i><i></i><i></i><i></i></span>
+        <span class="vibes-text">${d.vibesLabel} <b id="vibes-track">${d.tracks[tracksIdx] || d.tracks[0]}</b></span>
+      </div>
+
+      <div class="code" style="margin-top:20px;">
+        <div><span class="ln">1</span><span class="com">// playlist</span></div>
+        ${d.tracks.map((t,i) => `<div><span class="ln">${i+2}</span><span class="fn">${i===tracksIdx?'▶':' '}</span> <span class="${i===tracksIdx?'str':'com'}">${t}</span></div>`).join('')}
+        <div><span class="ln">${d.tracks.length+2}</span>&nbsp;</div>
+        <div><span class="ln">${d.tracks.length+3}</span><span class="com">// "que sais-je?" — m. montaigne, 1580</span></div>
+      </div>
+    </section>
+  `;
+}
+
+function renderCase(p, d) {
+  const slides = (p.slides && p.slides.length)
+    ? p.slides
+    : [{ cover: p.cover, caption: p.caption || p.subtitle }];
+  const first = slides[0];
+  const total = String(slides.length).padStart(2, '0');
+  return `
+    <section id="case" class="case-view">
+      <button class="case-back" type="button" id="case-back-btn">
+        <span class="arr">←</span><span>${d.caseBackLabel}</span>
+      </button>
+      <div class="case-eyebrow">${d.caseStudyLabel}</div>
+      <h1 class="case-title">${p.title}<span class="sub">.case</span></h1>
+      <div class="case-tags">
+        ${p.tags.map(t => `<span class="case-tag">${t}</span>`).join('')}
+      </div>
+      <div class="case-screen" data-case-slider data-slides-count="${slides.length}">
+        <div class="case-screen-chrome">
+          <div class="dots"><i></i><i></i><i></i></div>
+          <span class="addr">~/${p.id}.case — ${p.subtitle}</span>
+        </div>
+        <div class="case-screen-body pv-${first.cover || ''}" data-screen-body>
+          ${first.image
+            ? `<img class="case-screen-img" src="${first.image}" alt="${first.alt || p.title}">`
+            : `<span class="placeholder">${d.screenPlaceholder}<br/>${p.subtitle}</span>`}
+        </div>
+        ${slides.length > 1 ? `
+        <div class="case-slider">
+          <button type="button" class="case-slider-btn" data-prev aria-label="prev slide">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10 3.5L5.5 8l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="case-slider-dots">
+            ${slides.map((_, i) => `<button type="button" class="case-slider-dot${i === 0 ? ' active' : ''}" data-idx="${i}" aria-label="slide ${i+1}"></button>`).join('')}
+          </div>
+          <button type="button" class="case-slider-btn" data-next aria-label="next slide">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>` : ''}
+        <div class="case-caption" data-case-caption>// ${first.caption}</div>
+      </div>
+      <div class="case-blocks">
+        <div class="case-code-block task">
+          <div class="line"><span class="ln">1</span><span class="com">// ${d.caseTaskLabel}</span></div>
+          <div class="line"><span class="ln">2</span><span class="kw">const</span> <span class="fn">task</span> = () =&gt; (</div>
+          <div class="body-row"><span class="ln">3</span><div class="body-text">${p.task}</div></div>
+          <div class="line"><span class="ln">4</span>);</div>
+        </div>
+        <div class="case-code-block problem">
+          <div class="line"><span class="ln">1</span><span class="com">// ${d.caseProblemLabel}</span></div>
+          <div class="line"><span class="ln">2</span><span class="kw">const</span> <span class="fn">problem</span> = () =&gt; (</div>
+          <div class="body-row"><span class="ln">3</span><div class="body-text">${p.problemFull}</div></div>
+          <div class="line"><span class="ln">4</span>);</div>
+        </div>
+        <div class="case-code-block solution">
+          <div class="line"><span class="ln">1</span><span class="com">// ${d.caseSolutionLabel}</span></div>
+          <div class="line"><span class="ln">2</span><span class="kw">const</span> <span class="fn">solution</span> = () =&gt; (</div>
+          <div class="body-row"><span class="ln">3</span><div class="body-text">${p.solution}</div></div>
+          <div class="line"><span class="ln">4</span>);</div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function wireCase(p, d) {
+  const slides = (p.slides && p.slides.length)
+    ? p.slides
+    : [{ cover: p.cover, caption: p.caption || p.subtitle }];
+  if (slides.length <= 1) return;
+  const container = document.querySelector('[data-case-slider]');
+  if (!container) return;
+  const body     = container.querySelector('[data-screen-body]');
+  const captionEl= document.querySelector('[data-case-caption]');
+  const counter  = container.querySelector('[data-counter]');
+  const dots     = container.querySelectorAll('.case-slider-dot');
+  const prev     = container.querySelector('[data-prev]');
+  const next     = container.querySelector('[data-next]');
+  const total    = String(slides.length).padStart(2, '0');
+  let idx = 0;
+
+  function renderSlide() {
+    const s = slides[idx];
+    body.className = 'case-screen-body pv-' + (s.cover || '');
+    body.innerHTML = s.image
+      ? `<img class="case-screen-img" src="${s.image}" alt="${s.alt || p.title}">`
+      : `<span class="placeholder">${d.screenPlaceholder}<br/>${p.subtitle}</span>`;
+    if (captionEl) captionEl.textContent = '// ' + s.caption;
+    dots.forEach((el, i) => el.classList.toggle('active', i === idx));
+    if (counter) counter.textContent = String(idx + 1).padStart(2, '0') + ' / ' + total;
+  }
+
+  prev.addEventListener('click', () => { idx = (idx - 1 + slides.length) % slides.length; renderSlide(); });
+  next.addEventListener('click', () => { idx = (idx + 1) % slides.length; renderSlide(); });
+  dots.forEach((el, i) => el.addEventListener('click', () => { idx = i; renderSlide(); }));
+}
+
+function wireMain(d) {
+  const vBox = document.getElementById('vibes-box');
+  const tEl = document.getElementById('vibes-track');
+  if (vBox && tEl) {
+    vBox.addEventListener('click', () => {
+      tracksIdx = (tracksIdx + 1) % d.tracks.length;
+      tEl.textContent = d.tracks[tracksIdx];
+    });
+  }
+  document.querySelectorAll('.proj').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      openCase(el.dataset.proj);
+    });
+  });
+}
+
+function wireSidebarAndTabs() {
+  document.querySelectorAll('.tree-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = item.dataset.target;
+      if (item.dataset.projItem === '1') {
+        openCase(target);
+      } else if (currentCaseId) {
+        currentCaseId = null;
+        render(currentLang);
+        requestAnimationFrame(() => scrollToId(target));
+      } else {
+        scrollToId(target);
+      }
+    });
+  });
+  document.querySelectorAll('.tabs .tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      if (e.target.closest('[data-close-case]')) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeCase();
+        return;
+      }
+      e.preventDefault();
+      const target = tab.dataset.tab;
+      if (target === 'case') return;
+      if (currentCaseId) {
+        currentCaseId = null;
+        render(currentLang);
+        requestAnimationFrame(() => scrollToId(target));
+      } else {
+        scrollToId(target);
+      }
+    });
+  });
+}
+
+function scrollToId(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  document.getElementById('main').scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' });
+}
+
+function openCase(id) {
+  if (!id) return;
+  currentCaseId = id;
+  render(currentLang);
+}
+
+function closeCase() {
+  if (!currentCaseId) return;
+  const wasId = currentCaseId;
+  currentCaseId = null;
+  render(currentLang);
+  requestAnimationFrame(() => scrollToId(wasId));
+}
+
+// ===== SCROLL SPY =====
+function setupScrollSpy() {
+  const main = document.getElementById('main');
+  if (!mainScrollWired) {
+    mainScrollWired = true;
+    let ticking = false;
+    function updateActive() {
+      ticking = false;
+      if (currentCaseId) return;
+      const sections = [...document.querySelectorAll('#editor section')];
+      const sideItems = [...document.querySelectorAll('.tree-item')];
+      const tabs = [...document.querySelectorAll('.tabs .tab')];
+      const scrollTop = main.scrollTop;
+      const threshold = 80;
+      let activeId = sections[0] && sections[0].id;
+      for (const sec of sections) {
+        if (sec.offsetTop - threshold <= scrollTop) activeId = sec.id;
+        else break;
+      }
+      if (activeId === 'projects') {
+        const projEls = [...document.querySelectorAll('.proj')];
+        for (const p of projEls) {
+          if (p.offsetTop + (p.offsetParent?.offsetTop || 0) - threshold <= scrollTop) activeId = p.dataset.proj;
+          else break;
+        }
+      }
+      sideItems.forEach(item => item.classList.toggle('active', item.dataset.target === activeId));
+      const topLevel = ['readme','projects','stack','contact','vibes'];
+      let tabId = activeId;
+      if (!topLevel.includes(activeId)) tabId = 'projects';
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
+    }
+    main.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(updateActive); ticking = true; }
+    });
+    window.__updateActive = updateActive;
+  }
+  if (!currentCaseId && window.__updateActive) window.__updateActive();
+}
+
+// ===== INIT =====
+(function(){
+  let initLang = 'ru';
+  try {
+    const saved = localStorage.getItem('portfolio-lang');
+    if (saved && DATA[saved]) initLang = saved;
+  } catch(e){}
+
+  function setLang(lang) {
+    document.querySelectorAll('.lang button').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    render(lang);
+    try { localStorage.setItem('portfolio-lang', lang); } catch(e){}
+  }
+
+  document.querySelectorAll('.lang button').forEach(b => {
+    b.addEventListener('click', () => setLang(b.dataset.lang));
+  });
+
+  setLang(initLang);
+})();
+</script>
+
+
+
+</body></html>
