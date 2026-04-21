@@ -120,6 +120,16 @@ export function IconMidjourney({ size = 36 }: { size?: number }) {
   );
 }
 
+export function IconLoadingSkill({ size = 36 }: { size?: number }) {
+  return (
+    <svg className="p-loading-skill-icon" width={size} height={size} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="18" cy="18" r="12" stroke="rgba(212,251,60,0.18)" strokeWidth="2.5" />
+      <path className="p-loading-skill-arc" d="M18 6a12 12 0 0 1 12 12" stroke="#D4FB3C" strokeWidth="2.5" strokeLinecap="round" />
+      <circle className="p-loading-skill-dot" cx="30" cy="18" r="2.2" fill="#D4FB3C" />
+    </svg>
+  );
+}
+
 // Icon lookup map
 export const STACK_ICONS: Record<string, React.ReactNode> = {
   'figma':         <IconFigma />,
@@ -135,4 +145,6 @@ export const STACK_ICONS: Record<string, React.ReactNode> = {
   'confluence':    <IconConfluence />,
   'claude':        <IconClaude />,
   'midjourney':    <IconMidjourney />,
+  'загрузка нового скилла': <IconLoadingSkill />,
+  'loading new skill': <IconLoadingSkill />,
 };

@@ -78,11 +78,63 @@
   max-width: 380px;
   justify-self: end;
   align-self: start;
+  position: relative;
 }
 
 .p-readme-stats {
   width: 100%;
   min-width: 340px;
+}
+
+.p-readme-bat {
+  position: absolute;
+  top: -92px;
+  right: 6px;
+  width: 154px;
+  height: 92px;
+  pointer-events: none;
+  z-index: 3;
+  filter: drop-shadow(0 8px 16px rgba(107, 33, 168, 0.18));
+  transform: scaleX(-1);
+}
+
+.p-readme-bat-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.p-readme-bat-body {
+  clip-path: polygon(34% 28%, 67% 28%, 74% 100%, 28% 100%);
+}
+
+.p-readme-bat-wing-layer {
+  will-change: transform;
+}
+
+.p-readme-bat-wing-layer-left {
+  clip-path: polygon(0% 0%, 52% 0%, 54% 100%, 0% 100%);
+  transform-origin: 57% 54%;
+}
+
+.p-readme-bat-wing-layer-right {
+  clip-path: polygon(49% 0%, 100% 0%, 100% 100%, 46% 100%);
+  transform-origin: 43% 54%;
+}
+
+@keyframes p-bat-flap-left {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  50% { transform: rotate(-7deg) translateY(-2px); }
+}
+
+@keyframes p-bat-flap-right {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  50% { transform: rotate(7deg) translateY(-2px); }
 }
 
 .p-binary-photo {
@@ -303,8 +355,8 @@
 /* ===== Projects ===== */
 .p-proj {
   display: grid;
-  grid-template-columns: 46px 1fr 150px 110px 74px;
-  gap: 18px;
+  grid-template-columns: 34px 1fr 150px 110px 74px;
+  gap: 12px;
   align-items: center;
   padding: 16px 12px;
   border-bottom: 1px solid var(--p-line);
@@ -343,28 +395,70 @@
   background: var(--p-panel);
   border-radius: 4px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   font-family: var(--p-mono);
   font-size: 9px;
   color: var(--p-muted);
   cursor: default;
   overflow: visible;
+  text-align: center;
+  padding: 14px 10px;
+}
+.p-stack-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  transform: translateY(4px);
+}
+.p-stack-content-loading {
+  transform: translateY(0);
 }
 .p-stack-cell .p-stack-short {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   font-family: var(--p-sans);
   font-size: 16px;
   font-weight: 500;
   color: var(--p-ink);
   letter-spacing: -0.02em;
   line-height: 1;
+  flex-shrink: 0;
+}
+.p-stack-label {
+  max-width: 88%;
+  min-height: 2.7em;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  line-height: 1.35;
+  text-align: center;
+}
+
+@keyframes p-loading-skill-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes p-loading-skill-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.p-loading-skill-icon {
+  transform-origin: 50% 50%;
+  animation: p-loading-skill-spin 2.4s linear infinite;
+}
+
+.p-loading-skill-dot,
+.p-loading-skill-arc {
+  animation: p-loading-skill-pulse 1.4s ease-in-out infinite;
 }
 
 /* ===== Contacts ===== */
@@ -593,6 +687,7 @@
 }
 
 @media (max-width: 768px) {
+  .p-readme-bat { display: none !important; }
   /* Root adjustments - iOS optimizations */
   .p-root {
     -webkit-tap-highlight-color: transparent;
@@ -926,6 +1021,17 @@
     border-radius: 16px !important;
   }
 }
+
+@media (min-width: 769px) {
+  .p-readme-bat-wing-layer-left {
+    animation: p-bat-flap-left 1.15s steps(2, end) infinite;
+  }
+
+  .p-readme-bat-wing-layer-right {
+    animation: p-bat-flap-right 1.15s steps(2, end) infinite;
+  }
+}
+
 
 @media (max-width: 640px) {
   /* Smaller phones - maintain HIG standards */

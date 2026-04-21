@@ -60,6 +60,16 @@ function SectionHead({ title, ext, meta }: { title: string; ext: string; meta: s
   );
 }
 
+function PixelBat() {
+  return (
+    <div className="p-readme-bat" aria-hidden>
+      <img src="/portfolio/bat.png" alt="" className="p-readme-bat-img p-readme-bat-body" />
+      <img src="/portfolio/bat.png" alt="" className="p-readme-bat-img p-readme-bat-wing-layer p-readme-bat-wing-layer-left" />
+      <img src="/portfolio/bat.png" alt="" className="p-readme-bat-img p-readme-bat-wing-layer p-readme-bat-wing-layer-right" />
+    </div>
+  );
+}
+
 // ── README section ────────────────────────────────────────────────────────────
 
 function ReadmeSection({ d }: { d: LangData }) {
@@ -117,6 +127,7 @@ function ReadmeSection({ d }: { d: LangData }) {
         </div>
 
         <div className="p-readme-side">
+          <PixelBat />
           <div className="p-readme-stats" style={{ border: `1px solid ${C.line}`, background: C.panel, padding: '14px 16px', borderRadius: 4, width: '100%' }}>
             {Object.entries(d.stats).map(([k, v], i, arr) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 11, padding: '4px 0', borderBottom: i < arr.length - 1 ? `1px dashed ${C.line}` : 'none' }}>
@@ -164,7 +175,7 @@ function ProjectRow({ p, idx, onOpenCase }: { p: Project; idx: number; onOpenCas
         {String(idx + 1).padStart(2, '0')}
       </div>
       <div style={{ minWidth: 0 }}>
-        <div style={{ fontFamily: C.sans, fontSize: 19, fontWeight: 500, letterSpacing: '-0.01em', marginBottom: 3, lineHeight: 1.2, color: hovered ? C.accent2 : C.ink, transition: 'color 0.15s ease' }}>
+        <div style={{ fontFamily: C.sans, fontSize: 19, fontWeight: 500, letterSpacing: '-0.01em', marginBottom: 3, lineHeight: 1.2, color: hovered ? C.accent2 : C.ink, transition: 'color 0.15s ease', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {p.title}<span style={{ color: C.muted, fontWeight: 400, fontFamily: C.mono, fontSize: 14 }}>.case</span>
         </div>
         <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.4 }}>{p.problem}</div>
@@ -206,7 +217,7 @@ function ProjectRow({ p, idx, onOpenCase }: { p: Project; idx: number; onOpenCas
 function ProjectsSection({ d, onOpenCase }: { d: LangData; onOpenCase: (id: string) => void }) {
   return (
     <section id="projects" style={{ scrollMarginTop: 60 }}>
-      <SectionHead title={d.secProjectsTitle} ext="/" meta={d.secProjectsMeta.replace('%d', String(d.projects.length))} />
+      <SectionHead title={d.secProjectsTitle} ext="/" meta={d.secProjectsMeta} />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {d.projects.map((p, i) => (
           <ProjectRow key={p.id} p={p} idx={i} onOpenCase={onOpenCase} />
@@ -220,11 +231,14 @@ function ProjectsSection({ d, onOpenCase }: { d: LangData; onOpenCase: (id: stri
 
 function StackCell({ s }: { s: { short: string; name: string; skills: string[] } }) {
   const icon = STACK_ICONS[s.name];
+  const isLoading = s.name === 'загрузка нового скилла' || s.name === 'loading new skill';
 
   return (
     <div className="p-stack-cell">
-      <span className="p-stack-short">{icon ?? s.short}</span>
-      <span>{s.name}</span>
+      <div className={`p-stack-content${isLoading ? ' p-stack-content-loading' : ''}`}>
+        <span className="p-stack-short">{icon ?? s.short}</span>
+        <span className="p-stack-label">{s.name}</span>
+      </div>
     </div>
   );
 }
