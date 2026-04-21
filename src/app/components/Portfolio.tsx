@@ -208,8 +208,18 @@ function ProjectRow({ p, idx, onOpenCase }: { p: Project; idx: number; onOpenCas
           position: 'relative' as const, overflow: 'hidden', flexShrink: 0,
           transform: hovered ? 'scale(1.05)' : 'scale(1)',
           transition: 'transform 0.2s ease, border-color 0.2s ease',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: p.id === 'loading' ? C.panel : undefined,
         }}
-      />
+      >
+        {p.id === 'loading' && (
+          <div style={{
+            width: 20, height: 20, border: `2px solid ${C.muted}`,
+            borderTop: `2px solid ${C.accent2}`, borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+          }} />
+        )}
+      </div>
     </button>
   );
 }
@@ -598,6 +608,7 @@ export function Portfolio() {
   }, []);
 
   const openCase = useCallback((id: string) => {
+    if (id === 'loading') return; // Don't open loading placeholder
     setCurrentCase(id);
     requestAnimationFrame(() => mainRef.current?.scrollTo({ top: 0 }));
   }, []);
