@@ -8,7 +8,7 @@ const C = {
   bg: '#151517',
   panel: '#1c1c20',
   panel2: '#232328',
-  ink: '#e8e8ea',
+  ink: '#d7d7dc',
   muted: '#7a7a82',
   dim: '#3a3a42',
   line: 'rgba(255,255,255,0.07)',
@@ -619,6 +619,7 @@ function VibesSection({ d }: { d: LangData }) {
 const BLOCK_COLORS = {
   task:     { border: '#4b3bff', comment: '#a798ff', hl: '#a798ff', hlBg: 'rgba(75,59,255,0.18)' },
   problem:  { border: '#ff5f57', comment: '#ff8a8a', hl: '#ffb0b0', hlBg: 'rgba(255,95,87,0.14)' },
+  process:  { border: '#ff8a4c', comment: '#ffb36f', hl: '#ffb36f', hlBg: 'rgba(255,138,76,0.14)' },
   solution: { border: '#d4fb3c', comment: '#d4fb3c', hl: '#d4fb3c', hlBg: 'rgba(212,251,60,0.12)' },
 } as const;
 
@@ -735,6 +736,7 @@ function CaseView({ project, d, onBack }: { project: Project; d: LangData; onBac
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <CaseCodeBlock type="task" label={d.caseTaskLabel} text={project.task} />
         <CaseCodeBlock type="problem" label={d.caseProblemLabel} text={project.problemFull} />
+        {project.process && <CaseCodeBlock type="process" label={d.caseProcessLabel} text={project.process} />}
         <CaseCodeBlock type="solution" label={d.caseSolutionLabel} text={project.solution} />
       </div>
     </section>
