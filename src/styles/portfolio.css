@@ -456,15 +456,29 @@
 .p-proj-tag { transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease; }
 .p-proj-loading-bar {
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 12px;
   min-height: 76px;
+  padding: 16px 12px;
   cursor: default;
   color: var(--p-muted);
   background:
     linear-gradient(90deg, transparent, rgba(212,251,60,0.05), transparent),
     transparent;
   letter-spacing: 0.01em;
+  overflow: hidden;
+  position: relative;
+  transition: none;
+}
+.p-proj-loading-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(212,251,60,0.08) 50%, transparent 100%);
+  animation: p-loading-sweep 1.6s ease-in-out infinite;
+  transform: translateX(-100%);
+  pointer-events: none;
 }
 .p-proj-loading-bar:hover {
   background:
@@ -479,10 +493,23 @@
   border-top-color: var(--p-accent2);
   border-radius: 50%;
   animation: p-loading-spin 0.9s linear infinite;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+.p-proj-loading-bar > span:not(.p-proj-loading-spinner) {
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes p-loading-spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes p-loading-sweep {
+  0% { transform: translateX(-100%); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
 }
 
 /* ===== Stack ===== */
@@ -1338,7 +1365,7 @@
   }
   .p-readme-bat-bubble {
     display: block !important;
-    left: 76px !important;
+    left: 86px !important;
     top: -6px !important;
     font-size: 9px !important;
     padding: 7px 10px !important;
