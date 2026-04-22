@@ -1909,6 +1909,20 @@
     max-width: none !important;
     text-align: left !important;
   }
+  .p-case-info-tablist {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .p-case-info-tablist::-webkit-scrollbar {
+    display: none;
+  }
+  .p-case-info-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
 }
 
 
